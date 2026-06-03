@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, CheckCircle, FileText } from 'lucide-react';
-import { contactAPI } from '@/lib/api';
+import { contactAPI, resolveMediaUrl } from '@/lib/api';
 import { PageHeader, GlassCard, SectionTitle } from '@/components/ui-custom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +56,7 @@ export default function ContactPage() {
         savedFilePath = response?.data?.drawing_path
           || response?.data?.file_path
           || response?.data?.attachment_path
+          || response?.data?.data?.drawing_path
           || null;
         // Agar backend ne path diya toh use karo, warna original naam
         if (savedFilePath && !savedFileName) {
@@ -69,7 +70,7 @@ export default function ContactPage() {
       // ✅ FIX: Path ke saath attachment info include karo
       const attachmentInfo = drawingFile
         ? savedFilePath
-          ? `\n\n📎 *Drawing Attached:* ${savedFileName} (${savedFilePath})`
+          ? `\n\nDrawing Attached: ${savedFileName} (${resolveMediaUrl(savedFilePath)})`
           : `\n\n📎 *Drawing Attached:* ${drawingFile.name}\n_(Please check email/backend for the PDF file)_`
         : '';
 

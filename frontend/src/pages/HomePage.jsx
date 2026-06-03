@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Settings, Shield, Zap, Award, ClipboardCheck } from 'lucide-react';
-import { homeAPI, servicesAPI, productsAPI, machinesAPI, inspectionsAPI, logosAPI } from '@/lib/api';
+import { homeAPI, servicesAPI, productsAPI, machinesAPI, inspectionsAPI, logosAPI, resolveMediaUrl } from '@/lib/api';
 import { GlassCard, SectionTitle, LoadingSpinner } from '@/components/ui-custom';
 
 const heroImages = [
@@ -57,21 +57,24 @@ export default function HomePage() {
       }
 
       if (servicesRes.status === 'fulfilled') {
-        setServices(Array.isArray(servicesRes.value.data) ? servicesRes.value.data.slice(0, 6) : []);
+        const nextServices = Array.isArray(servicesRes.value.data) ? servicesRes.value.data : [];
+        setServices(nextServices.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)).slice(0, 6));
       } else {
         console.error('Error fetching services:', servicesRes.reason);
         setServices([]);
       }
 
       if (productsRes.status === 'fulfilled') {
-        setProducts(Array.isArray(productsRes.value.data) ? productsRes.value.data.slice(0, 4) : []);
+        const nextProducts = Array.isArray(productsRes.value.data) ? productsRes.value.data : [];
+        setProducts(nextProducts.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)).slice(0, 4));
       } else {
         console.error('Error fetching products:', productsRes.reason);
         setProducts([]);
       }
 
       if (machinesRes.status === 'fulfilled') {
-        setMachines(Array.isArray(machinesRes.value.data) ? machinesRes.value.data.slice(0, 4) : []);
+        const nextMachines = Array.isArray(machinesRes.value.data) ? machinesRes.value.data : [];
+        setMachines(nextMachines.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)).slice(0, 4));
       } else {
         console.error('Error fetching machines:', machinesRes.reason);
         setMachines([]);
@@ -86,7 +89,7 @@ export default function HomePage() {
 
       if (logosRes.status === 'fulfilled') {
         const nextLogos = Array.isArray(logosRes.value.data)
-          ? logosRes.value.data.filter((logo) => logo?.name?.trim())
+          ? logosRes.value.data.filter((logo) => logo?.name?.trim() || logo?.image_url || logo?.imageUrl)
           : [];
         setClientLogos(nextLogos);
       } else {
@@ -340,7 +343,7 @@ export default function HomePage() {
               <motion.div key={service.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
                 <GlassCard className="service-card h-full" data-testid={`service-card-${index}`}>
                   <div className="image-container aspect-video mb-4 rounded-xl">
-                    <img src={service.imageUrl || service.image_url || 'https://images.pexels.com/photos/8973680/pexels-photo-8973680.jpeg?w=400'} alt={service.name} className="w-full h-full object-cover" />
+                    <img src={resolveMediaUrl(service.imageUrl || service.image_url) || 'https://images.pexels.com/photos/8973680/pexels-photo-8973680.jpeg?w=400'} alt={service.name} className="w-full h-full object-cover" />
                   </div>
                   <h3 className="text-xl font-bold text-white font-['Poppins'] mb-3">{service.name}</h3>
                   <p className="text-[#B8C4CE] text-sm leading-relaxed line-clamp-3">{service.description}</p>
@@ -366,7 +369,7 @@ export default function HomePage() {
                 <Link to="/products" data-testid={`product-card-${index}`}>
                   <GlassCard className="h-full group cursor-pointer">
                     <div className="image-container aspect-square mb-4 rounded-xl">
-                      <img src={product.images?.[0]?.imageUrl || product.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=400'} alt={product.name} className="w-full h-full object-cover" />
+                      <img src={resolveMediaUrl(product.images?.[0]?.imageUrl || product.images?.[0]?.image_url) || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=400'} alt={product.name} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="text-lg font-bold text-white font-['Poppins'] mb-2 group-hover:text-[#FF6B00] transition-colors">{product.name}</h3>
                     <p className="text-[#8896A6] text-sm line-clamp-2">{product.description}</p>
@@ -465,9 +468,17 @@ export default function HomePage() {
               {[...visibleClientLogos, ...visibleClientLogos].map((logo, index) => (
                 <div
                   key={`${logo.id || logo.name || 'client'}-${index}`}
-                  className="flex-shrink-0 rounded-xl border border-[#FF6B00]/20 bg-[#0B1F3A]/40 px-8 py-4 text-[#B8C4CE] font-bold font-['Poppins'] text-base md:text-lg whitespace-nowrap hover:text-[#FF6B00] hover:border-[#FF6B00]/50 transition-colors cursor-default"
+                  className="flex-shrink-0 rounded-xl border border-[#FF6B00]/20 bg-white/95 px-8 py-4 text-[#0B1F3A] font-bold font-['Poppins'] text-base md:text-lg whitespace-nowrap hover:border-[#FF6B00]/50 transition-colors cursor-default min-w-[180px] h-24 flex items-center justify-center"
                 >
-                  {logo.name}
+                  {logo.image_url || logo.imageUrl ? (
+                    <img
+                      src={resolveMediaUrl(logo.image_url || logo.imageUrl)}
+                      alt={logo.name || 'Client logo'}
+                      className="max-h-14 max-w-[160px] object-contain"
+                    />
+                  ) : (
+                    logo.name
+                  )}
                 </div>
               ))}
             </div>

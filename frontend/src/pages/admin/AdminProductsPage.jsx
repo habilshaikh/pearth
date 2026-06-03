@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Image, Upload, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
-import { productsAPI } from '@/lib/api';
+import { productsAPI, resolveMediaUrl } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -286,7 +286,7 @@ export default function AdminProductsPage() {
               <div className="aspect-video bg-[#2E2E2E] relative group/card">
                 {product.images?.[0]?.image_url ? (
                   <img
-                    src={product.images[0].image_url}
+                    src={resolveMediaUrl(product.images[0].image_url || product.images[0].imageUrl)}
                     alt={product.name}
                     className="w-full h-full object-cover pointer-events-none"
                   />

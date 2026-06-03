@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
-import { productsAPI } from '@/lib/api';
+import { productsAPI, resolveMediaUrl } from '@/lib/api';
 import { PageHeader, GlassCard, LoadingSpinner } from '@/components/ui-custom';
 
 export default function ProductsPage() {
@@ -86,7 +86,7 @@ export default function ProductsPage() {
                   >
                     <div className="image-container aspect-[4/3] mb-4 rounded-xl">
                       <img
-                        src={product.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=600'}
+                        src={resolveMediaUrl(product.images?.[0]?.image_url || product.images?.[0]?.imageUrl) || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=600'}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
@@ -133,7 +133,7 @@ export default function ProductsPage() {
                 <div className="relative bg-[#0B1F3A] p-6">
                   <div className="aspect-square rounded-xl overflow-hidden">
                     <img
-                      src={selectedProduct.images?.[currentImageIndex]?.image_url || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=800'}
+                      src={resolveMediaUrl(selectedProduct.images?.[currentImageIndex]?.image_url || selectedProduct.images?.[currentImageIndex]?.imageUrl) || 'https://images.unsplash.com/photo-1531053326607-9d349096d887?w=800'}
                       alt={selectedProduct.name}
                       className="w-full h-full object-cover"
                     />

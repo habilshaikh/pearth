@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, X, Image, Upload, CheckCircle } from 'lucide-react';
-import { servicesAPI } from '@/lib/api';
+import { Plus, Pencil, Trash2, X, Image, Upload, CheckCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { servicesAPI, resolveMediaUrl } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -160,6 +160,7 @@ export default function AdminServicesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [reordering, setReordering] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -173,13 +174,40 @@ export default function AdminServicesPage() {
   const fetchServices = async () => {
     try {
       const response = await servicesAPI.getAll();
-      setServices(response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setServices(data.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)));
     } catch (error) {
       console.error('Error fetching services:', error);
       toast.error('Failed to load services');
     } finally {
       setLoading(false);
     }
+  };
+
+  const saveBackendReorder = async (orderedServices) => {
+    setReordering(true);
+    try {
+      await servicesAPI.reorder(orderedServices.map((service, index) => ({
+        id: service.id,
+        sort_order: index,
+      })));
+    } catch (error) {
+      console.error('Service reorder failed:', error);
+      toast.error('Service order save nahi hua, dobara try karo');
+      fetchServices();
+    } finally {
+      setReordering(false);
+    }
+  };
+
+  const moveService = async (index, direction) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= services.length || reordering) return;
+
+    const nextServices = [...services];
+    [nextServices[index], nextServices[nextIndex]] = [nextServices[nextIndex], nextServices[index]];
+    setServices(nextServices);
+    await saveBackendReorder(nextServices);
   };
 
   const openModal = (service = null) => {
@@ -263,6 +291,7 @@ export default function AdminServicesPage() {
         <div>
           <h1 className="text-3xl font-bold text-white font-['Poppins']">Services</h1>
           <p className="text-[#6E7A85] mt-1">Manage your service offerings</p>
+          {reordering && <p className="text-[#FF6B00] text-sm mt-2">Saving priority...</p>}
         </div>
         <Button
           onClick={() => openModal()}
@@ -293,7 +322,7 @@ export default function AdminServicesPage() {
               <div className="aspect-video bg-[#2E2E2E] relative">
                 {service.image_url ? (
                   <img
-                    src={service.image_url}
+                    src={resolveMediaUrl(service.image_url)}
                     alt={service.name}
                     className="w-full h-full object-cover"
                   />
@@ -302,6 +331,27 @@ export default function AdminServicesPage() {
                     <Image size={40} className="text-[#6E7A85]" />
                   </div>
                 )}
+                <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full font-medium">
+                  #{index + 1}
+                </div>
+                <div className="absolute top-2 right-2 flex flex-col gap-1">
+                  <button
+                    onClick={() => moveService(index, -1)}
+                    disabled={index === 0 || reordering}
+                    className="w-8 h-8 rounded-lg bg-black/60 text-white disabled:text-white/20 disabled:cursor-not-allowed hover:bg-[#FF6B00] transition-colors"
+                    title="Move up"
+                  >
+                    <ChevronUp size={16} className="mx-auto" />
+                  </button>
+                  <button
+                    onClick={() => moveService(index, 1)}
+                    disabled={index === services.length - 1 || reordering}
+                    className="w-8 h-8 rounded-lg bg-black/60 text-white disabled:text-white/20 disabled:cursor-not-allowed hover:bg-[#FF6B00] transition-colors"
+                    title="Move down"
+                  >
+                    <ChevronDown size={16} className="mx-auto" />
+                  </button>
+                </div>
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-bold text-white font-['Poppins'] mb-2">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { servicesAPI } from '@/lib/api';
+import { servicesAPI, resolveMediaUrl } from '@/lib/api';
 import { PageHeader, GlassCard, LoadingSpinner, SectionTitle } from '@/components/ui-custom';
 
 export default function ServicesPage() {
@@ -14,7 +14,8 @@ export default function ServicesPage() {
   const fetchServices = async () => {
     try {
       const response = await servicesAPI.getAll();
-      setServices(Array.isArray(response.data) ? response.data : []);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setServices(data.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)));
     } catch (error) {
       console.error('Error fetching services:', error);
       setServices([]);
@@ -53,7 +54,7 @@ export default function ServicesPage() {
                   <GlassCard className="service-card h-full" data-testid={`service-card-${index}`}>
                     <div className="image-container aspect-video mb-6 rounded-xl">
                       <img
-                        src={service.image_url || 'https://images.pexels.com/photos/8973680/pexels-photo-8973680.jpeg?w=600'}
+                        src={resolveMediaUrl(service.image_url || service.imageUrl) || 'https://images.pexels.com/photos/8973680/pexels-photo-8973680.jpeg?w=600'}
                         alt={service.name}
                         className="w-full h-full object-cover"
                       />

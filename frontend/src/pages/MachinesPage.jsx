@@ -15,7 +15,8 @@ export default function MachinesPage() {
   const fetchMachines = async () => {
     try {
       const response = await machinesAPI.getAll();
-      setMachines(Array.isArray(response.data) ? response.data : []);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setMachines(data.sort((a, b) => (a.sort_order ?? 9999) - (b.sort_order ?? 9999)));
     } catch (error) {
       console.error('Error fetching machines:', error);
       setMachines([]);

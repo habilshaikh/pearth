@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Trash2, Eye, CheckCircle, FileText } from 'lucide-react';
-import { contactAPI } from '@/lib/api';
+import { contactAPI, resolveMediaUrl } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-
-const BASE_URL = 'https://saitech.co.in';
 
 const extractAttachment = (text) => {
   if (!text) return { cleanMessage: text, attachmentPath: null, attachmentName: null };
@@ -15,7 +13,7 @@ const extractAttachment = (text) => {
   if (match) {
     const attachmentName = match[1].trim();
     const rawPath = match[2].trim();
-    const attachmentPath = rawPath.startsWith('http') ? rawPath : `${BASE_URL}${rawPath}`;
+    const attachmentPath = resolveMediaUrl(rawPath);
     const cleanMessage = text.replace(match[0], '').trim();
     return { cleanMessage, attachmentPath, attachmentName };
   }
@@ -32,7 +30,7 @@ const extractAttachment = (text) => {
   const pathMatch = text.match(/\(?(\/uploads\/inquiries\/[^\s)]+\.pdf)\)?/i);
   if (pathMatch) {
     const rawPath = pathMatch[1];
-    const attachmentPath = `${BASE_URL}${rawPath}`;
+    const attachmentPath = resolveMediaUrl(rawPath);
     const cleanMessage = text.replace(pathMatch[0], '').replace(/📎.*$/m, '').trim();
     return { cleanMessage, attachmentPath, attachmentName: 'Drawing.pdf' };
   }
@@ -107,7 +105,14 @@ export default function AdminMessagesPage() {
           {/* Messages List */}
           <div className="lg:col-span-1 space-y-3">
             {messages.map((message, index) => {
-              const { cleanMessage, attachmentPath, attachmentName } = extractAttachment(message.message);
+              const attachmentFromFields = message.drawing_path
+                ? {
+                    cleanMessage: message.message,
+                    attachmentPath: resolveMediaUrl(message.drawing_path),
+                    attachmentName: message.drawing_name || message.drawing_path.split('/').pop() || 'Drawing.pdf',
+                  }
+                : null;
+              const { cleanMessage, attachmentPath, attachmentName } = attachmentFromFields || extractAttachment(message.message);
               return (
                 <motion.div
                   key={message.id}
@@ -152,7 +157,14 @@ export default function AdminMessagesPage() {
           {/* Message Detail */}
           <div className="lg:col-span-2">
             {selectedMessage ? (() => {
-              const { cleanMessage, attachmentPath, attachmentName } = extractAttachment(selectedMessage.message);
+              const attachmentFromFields = selectedMessage.drawing_path
+                ? {
+                    cleanMessage: selectedMessage.message,
+                    attachmentPath: resolveMediaUrl(selectedMessage.drawing_path),
+                    attachmentName: selectedMessage.drawing_name || selectedMessage.drawing_path.split('/').pop() || 'Drawing.pdf',
+                  }
+                : null;
+              const { cleanMessage, attachmentPath, attachmentName } = attachmentFromFields || extractAttachment(selectedMessage.message);
               return (
                 <motion.div
                   initial={{ opacity: 0 }}
