@@ -1,0 +1,133 @@
+{
+  "typography": {
+    "headings": {
+      "family": "Poppins",
+      "weights": ["700", "800", "900"],
+      "styling": "tracking-tighter uppercase (for small labels), bold presence, never centered unless specific hero layout. The 'Voice' of precision.",
+      "class": "font-sans font-black"
+    },
+    "body": {
+      "family": "Inter",
+      "weights": ["300", "400", "500"],
+      "styling": "leading-relaxed, highly legible, clear.",
+      "class": "font-sans"
+    }
+  },
+  "colors": {
+    "primary": "#0B1F3A",
+    "background": "#121212",
+    "secondary": "#2E2E2E",
+    "accent": "#FF6B00",
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A0AAB2",
+      "muted": "#6E7A85"
+    },
+    "surface": {
+      "glass": "bg-[#2E2E2E]/60 backdrop-blur-xl border border-white/10",
+      "solid": "bg-[#1E1E1E]",
+      "glow": "shadow-[0_0_20px_rgba(255,107,0,0.3)]"
+    }
+  },
+  "visual_enhancers": [
+    "Textured noise overlay: Use CSS radial gradients or a subtle grain PNG overlay mixed with `mix-blend-overlay` to give a raw, metallic feel.",
+    "Gradient Meshes: Very dark, subtle background flares mixing #0B1F3A and #121212.",
+    "Grid Borders: Expose the skeleton for industrial technical look. Use border-collapse with subtle 1px border-[#2E2E2E]/40.",
+    "Glassmorphism for all floating elements (Nav, Cards, Modals). NEVER use 100% transparent backgrounds."
+  ],
+  "components_needed": [
+    "GlassCard",
+    "GlowingButton",
+    "IndustrialGridItem",
+    "HeroSection",
+    "ImageGalleryWithZoom"
+  ],
+  "grids": {
+    "marketing": "MODE A: 'Tetris' Grid. md:grid-cols-12. gap-8. Heavy asymmetry. Span logic: Hero col-span-8, Secondary col-span-4.",
+    "dashboard": "MODE B: High Density. md:grid-cols-3. gap-4 or 6. Strict hierarchy."
+  },
+  "layouts": {
+    "spacing": "Generous Spacing Philosophy. Use p-8 to p-16. Containers with borders MUST have internal padding. Optical alignment over mathematical.",
+    "sections": "Rich and layered. Combine dark solid backgrounds with glassmorphism overlays."
+  },
+  "motion": {
+    "scroll": "Smooth scroll (Lenis recommended if customized, otherwise rely on Framer Motion viewport triggers).",
+    "interactions": "Hover: Subtle scale-up (1.02) and brightness increase. Image hover: zoom effect (`group-hover:scale-110 transition-transform duration-700`).",
+    "entrance": "Staggered fade-up for list items using Framer Motion."
+  },
+  "accessibility": {
+    "contrast": "Text over images must use heavy black linear gradients underneath. Active states must contrast against the dark theme.",
+    "focus": "focus:ring-2 focus:ring-[#FF6B00] outline-none"
+  },
+  "media": {
+    "images": "Must have rounded corners (rounded-xl or 2xl), subtle inner shadow or border-white/10 to frame them, hover zoom effect via overflow-hidden wrappers.",
+    "overlays": "Images must have dark overlays (bg-black/40) when text is placed on them."
+  },
+  "3d_libraries_and_steps": {
+    "recommended": "framer-motion (for animations), lucide-react (icons)",
+    "steps": [
+      "Install framer-motion: yarn add framer-motion",
+      "Install lucide-react: yarn add lucide-react"
+    ]
+  },
+  "image_urls": [
+    {
+      "category": "Hero Background",
+      "url": "https://images.pexels.com/photos/3688262/pexels-photo-3688262.jpeg",
+      "description": "Worker generating bright sparks in dark industrial setting."
+    },
+    {
+      "category": "About Section",
+      "url": "https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg",
+      "description": "Woman engineer working on machine repair."
+    },
+    {
+      "category": "Products",
+      "url": "https://images.unsplash.com/photo-1758873263428-f4b2edb45fe1",
+      "description": "Rows of shiny metal components."
+    },
+    {
+      "category": "Services",
+      "url": "https://images.pexels.com/photos/149387/pexels-photo-149387.jpeg",
+      "description": "Interlocking metal gears."
+    },
+    {
+      "category": "Machines Highlight",
+      "url": "https://images.unsplash.com/photo-1740209475472-aa7d280f7452",
+      "description": "Machine cutting metal piece."
+    },
+    {
+      "category": "Client Logos",
+      "url": "https://images.pexels.com/photos/544295/pexels-photo-544295.jpeg",
+      "description": "Black and white minimal logo."
+    }
+  ],
+  "component_path": "/app/src/components/ui",
+  "instructions_to_main_agent": [
+    "DO NOT use pure white backgrounds (#FFFFFF) anywhere. Stick strictly to the dark theme (#121212).",
+    "Use Poppins for Headings with `font-black` and `tracking-tighter`.",
+    "Use Industrial Orange (#FF6B00) sparingly for CTAs, glowing borders, and key interactive elements.",
+    "Implement the 'Tracing Beam' or subtle glowing borders on Cards for the technical look.",
+    "For the Admin panel, use a high-density 'Bento' grid, strict spacing, and high contrast against the dark background."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add `.App { text-align: center; }` in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Create new components that match the style and conventions of existing components when needed.",
+    "Components MUST use named exports (`export const ComponentName = ...`). Pages MUST use default exports (`export default function PageName() {...}`).",
+    "Use `sonner` for toasts. Sonner component are located in `/app/src/components/ui/sonner.js` (or similar).",
+    "All interactive and key informational elements MUST include a `data-testid` attribute."
+  ]
+}

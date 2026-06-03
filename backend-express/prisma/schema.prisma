@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+model HomeContent {
+  id           Int      @id @default(autoincrement())
+  heroTitle    String   @default("Precision CNC Machining") @map("hero_title")
+  heroSubtitle String   @default("Engineering Excellence Since 1998") @map("hero_subtitle")
+  heroImage    String   @default("/uploads/home/hero.jpg") @map("hero_image")
+  aboutText    String   @default("SAI TECH is a leading precision CNC machining company...") @map("about_text")
+  aboutImage   String   @default("/uploads/home/about.jpg") @map("about_image")
+  ctaText      String   @default("Get Your Custom Quote Today") @map("cta_text")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("home_content")
+}
+
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String
+  specs        String?
+  applications String?
+  qualityNote  String?        @map("quality_note")
+  images       ProductImage[]
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String   @map("image_url")
+  productId Int      @map("product_id")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("product_images")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("services")
+}
+
+model Machine {
+  id        Int      @id @default(autoincrement())
+  name      String
+  capacity  String
+  specs     String?
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("machines")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+model ClientLogo {
+  id        Int      @id @default(autoincrement())
+  name      String
+  imageUrl  String   @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("client_logos")
+}
